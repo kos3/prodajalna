@@ -202,7 +202,7 @@ streznik.post('/prijava', function(zahteva, odgovor) {
   
   form.parse(zahteva, function (napaka1, polja, datoteke) {
     statusRegistracije = "Stranka je bila uspešno registrirana.";
-    if (napaka1) {statusRegistracije = "Napaka pri registraciji.";};
+    if (napaka1) {statusRegistracije = "Prišlo je do napake pri registraciji nove stranke. Prosim preverite vnešene podatke in poskusite znova.";};
     var napaka2 = false;
     try {
       var stmt = pb.prepare("\
@@ -217,7 +217,7 @@ streznik.post('/prijava', function(zahteva, odgovor) {
       stmt.finalize();
     } catch (err) {
       napaka2 = true;
-      statusRegistracije = "Napaka pri registraciji.";
+      statusRegistracije = "Prišlo je do napake pri registraciji nove stranke. Prosim preverite vnešene podatke in poskusite znova.";
     }
     odgovor.redirect("/prijava"); // ob redirekciji na /prijava se prikaže statusRegistracije
   });
