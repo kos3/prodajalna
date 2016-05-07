@@ -27,6 +27,7 @@ streznik.use(
 );
 
 var razmerje_usd_eur = 0.877039116;
+var statusRegistracije = "";
 
 function davcnaStopnja(izvajalec, zanr) {
   switch (izvajalec) {
@@ -200,6 +201,8 @@ streznik.post('/prijava', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
   
   form.parse(zahteva, function (napaka1, polja, datoteke) {
+    statusRegistracije = "Stranka je bila uspešno registrirana.";
+    if (napaka1) {statusRegistracije = "Napaka pri registraciji.";};
     var napaka2 = false;
     try {
       var stmt = pb.prepare("\
@@ -208,19 +211,15 @@ streznik.post('/prijava', function(zahteva, odgovor) {
     	  Address, City, State, Country, PostalCode, \
     	  Phone, Fax, Email, SupportRepId) \
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
-      //TODO: add fields and finalize
       stmt.run(polja.FirstName, polja.LastName, polja.Company, 
                polja.Address, polja.City, polja.State, polja.Country, polja.PostalCode, 
                polja.Phone, polja.Fax, polja.Email, 3);
       stmt.finalize();
     } catch (err) {
       napaka2 = true;
+      statusRegistracije = "Napaka pri registraciji.";
     }
-    if (napaka1 || napaka2) { // Prišlo do napake
-    odgovor.end();
-    } else { // Ni prišlo do napake
-      odgovor.redirect("/prijava");
-    }
+    odgovor.redirect("/prijava"); // ob redirekciji na /prijava se prikaže statusRegistracije
   });
 })
 
@@ -228,7 +227,7 @@ streznik.post('/prijava', function(zahteva, odgovor) {
 streznik.get('/prijava', function(zahteva, odgovor) {
   vrniStranke(function(napaka1, stranke) {
       vrniRacune(function(napaka2, racuni) {
-        odgovor.render('prijava', {sporocilo: "", seznamStrank: stranke, seznamRacunov: racuni});  
+        odgovor.render('prijava', {sporocilo: statusRegistracije, seznamStrank: stranke, seznamRacunov: racuni});  
       }) 
     });
 })
