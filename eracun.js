@@ -216,8 +216,11 @@ streznik.post('/prijava', function(zahteva, odgovor) {
     } catch (err) {
       napaka2 = true;
     }
-  
+    if (napaka1 || napaka2) { // Prišlo do napake
     odgovor.end();
+    } else { // Ni prišlo do napake
+      odgovor.redirect("/prijava");
+    }
   });
 })
 
