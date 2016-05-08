@@ -133,15 +133,7 @@ var pesmiIzRacuna = function(racunId, callback) {
     Track.TrackId IN (SELECT InvoiceLine.TrackId FROM InvoiceLine, Invoice \
     WHERE InvoiceLine.InvoiceId = Invoice.InvoiceId AND Invoice.InvoiceId = " + racunId + ")",
     function(napaka, vrstice) {
-      // if (napaka) {
-      //   callback(false);
-      // } else {
-      //   for (var i=0; i<vrstice.length; i++) {
-      //     vrstice[i].stopnja=davcnaStopnja((vrstice[i].opisArtikla.split(' (')[1]).split(')')[0], vrstice[i].zanr);
-      //   }
-      //   console.log(vrstice);
-      //   callback(vrstice);
-      // }
+      //console.log(vrstice);
       callback(napaka, vrstice);
     })
 }
@@ -151,12 +143,7 @@ var strankaIzRacuna = function(racunId, callback) {
     pb.all("SELECT Customer.* FROM Customer, Invoice \
             WHERE Customer.CustomerId = Invoice.CustomerId AND Invoice.InvoiceId = " + racunId,
     function(napaka, vrstice) {
-      // if (napaka) {
-      //   callback(false);
-      // } else {
-      //   console.log(vrstice);
-      //   callback(vrstice);
-      // }
+      //console.log(vrstice);
       callback(napaka, vrstice);
     })
 }
@@ -164,10 +151,10 @@ var strankaIzRacuna = function(racunId, callback) {
 // Izpis računa v HTML predstavitvi na podlagi podatkov iz baze
 streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
   var form = new formidable.IncomingForm();
-  
+
   form.parse(zahteva, function(napaka, polja, datoteke) {
     strankaIzRacuna(polja.seznamRacunov, function(napaka1, stranka) {
-      pesmiIzRacuna(polja.seznamRacunov, function(napaka2, pesmi) {
+       pesmiIzRacuna(polja.seznamRacunov, function(napaka2, pesmi) {
         if (napaka1 || napaka2) {
           odgovor.sendStatus(500);
         } else if (pesmi.length == 0) {
@@ -180,7 +167,7 @@ streznik.post('/izpisiRacunBaza', function(zahteva, odgovor) {
                           postavkeRacuna: pesmi
           })
         }
-      })
+       })
     })
   })
 })
