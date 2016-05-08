@@ -133,7 +133,15 @@ var pesmiIzRacuna = function(racunId, callback) {
     Track.TrackId IN (SELECT InvoiceLine.TrackId FROM InvoiceLine, Invoice \
     WHERE InvoiceLine.InvoiceId = Invoice.InvoiceId AND Invoice.InvoiceId = " + racunId + ")",
     function(napaka, vrstice) {
-      console.log(vrstice);
+      if (napaka) {
+        callback(false);
+      } else {
+        for (var i=0; i<vrstice.length; i++) {
+          vrstice[i].stopnja=davcnaStopnja((vrstice[i].opisArtikla.split(' (')[1]).split(')')[0], vrstice[i].zanr);
+        }
+        console.log(vrstice);
+        callback(vrstice);
+      }
     })
 }
 
@@ -142,7 +150,12 @@ var strankaIzRacuna = function(racunId, callback) {
     pb.all("SELECT Customer.* FROM Customer, Invoice \
             WHERE Customer.CustomerId = Invoice.CustomerId AND Invoice.InvoiceId = " + racunId,
     function(napaka, vrstice) {
-      console.log(vrstice);
+      if (napaka) {
+        callback(false);
+      } else {
+        console.log(vrstice);
+        callback(vrstice);
+      }
     })
 }
 
